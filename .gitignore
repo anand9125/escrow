@@ -1,0 +1,24 @@
+.anchor
+.DS_Store
+target
+**/*.rs.bk
+node_modules
+test-ledger
+.yarn
+# Ignore build artifacts
+target/
+dist/
+node_modules/
+.anchor/
+.idea/
+.vscode/
+
+# Solana ledger files
+test-ledger/
+new-ledger/
+.anchor/test-ledger/
+
+# Logs
+*.log
+
+
