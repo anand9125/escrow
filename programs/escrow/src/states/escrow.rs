@@ -4,7 +4,7 @@ use anchor_lang::prelude::*;
 pub struct Escrow {
     pub seed:u64,
     pub bump:u8,  //Helps later when PDA needs to sign transactions and Allows anyone reading the account to reconstruct the PDA info
-    pub initalizer:Pubkey,
+    pub initializer:Pubkey,
     pub mint_a:Pubkey,
     pub mint_b:Pubkey,
     pub initalizer_amount:u64,

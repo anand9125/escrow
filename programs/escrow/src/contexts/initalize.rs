@@ -25,8 +25,8 @@ pub struct Initialize<'info>{   //'info is a lifetime parameter used by Anchor t
         payer = initializer,
         space = Escrow::INIT_SPACE,
         seeds = [
-            b"escrow".as_ref(),
-            &seed.to_le_bytes(),
+            b"state".as_ref(),  //b"state" is a byte string literal of type [u8; 5] .as_ref() converts [u8; 5] into &[u8].
+            &seed.to_le_bytes(),  //seed.to_le_bytes() produces [u8; 8] Rust automatically coerces &[u8; 8] into &[u8]
         ],
         bump
      )]
@@ -57,7 +57,7 @@ impl<'info>Initialize<'info>{
         self.escrow.set_inner(Escrow {  //set_inner is an Anchor helper method that overwrites the inner data of an account.
             seed,
             bump:bumps.escrow,
-            initalizer :self.initializer.key(),
+            initializer :self.initializer.key(),
             mint_a:self.mint_a.key(),
             mint_b:self.mint_b.key(),
             initalizer_amount,
@@ -77,8 +77,8 @@ impl<'info>Initialize<'info>{
         )
     }
     pub fn into_deposit_contenxt(&self)->CpiContext<'_, '_, '_, 'info, TransferChecked<'info>>{ //Returns a CPI Context (CpiContext) for the SPL Token Program’s TransferChecked instruction.
-        let cpi_accounts = TransferChecked{
-            from:self.initializer_ata_a.to_account_info(),
+        let cpi_accounts = TransferChecked{  //in Anchor each CPI call has a corrosponding struct that describe required accounts
+            from:self.initializer_ata_a.to_account_info(), //(to_account_info())is the raw representation of an account in Solana:
             mint:self.mint_a.to_account_info(),  //The mint account of the token being transferred
             to:self.vault.to_account_info(),
             authority:self.initializer.to_account_info(),

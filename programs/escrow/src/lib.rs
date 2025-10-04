@@ -22,4 +22,11 @@ pub mod escrow {
         )?;
         ctx.accounts.deposit(initalizar_amount)
     }
+    pub fn cancel(ctx:Context<Cancel>)->Result<()>{
+      ctx.accounts.refund_and_close_vault()
+    }
+
+    pub fn exchange(ctx:Context<Exchange>)->Result<()>{
+      Ok(())
+    }
 }
