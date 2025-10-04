@@ -6,7 +6,9 @@ use anchor_spl::{
     },
 };
 
-use crate::states::Escrow;
+use crate::states::EscrowState;
+
+
 
 #[derive(Accounts)]
 pub struct Cancel<'info> {
@@ -14,7 +16,7 @@ pub struct Cancel<'info> {
     initializer: Signer<'info>,
     mint_a: Account<'info, Mint>,
     #[account(
-        mut,               
+        mut,
         associated_token::mint = mint_a,
         associated_token::authority = initializer
     )]
@@ -23,32 +25,33 @@ pub struct Cancel<'info> {
         mut,
         has_one = initializer,
         has_one = mint_a,
-        close = initializer, //when insttruction runs succesfully close account and send all remaining sol 
+        close = initializer,
         seeds=[b"state", escrow.seed.to_le_bytes().as_ref()],
         bump = escrow.bump,
     )]
-    escrow: Account<'info, Escrow>,
+    escrow: Account<'info, EscrowState>,
     #[account(
         mut,
         associated_token::mint = mint_a,
         associated_token::authority = escrow
     )]
     pub vault: Account<'info, TokenAccount>,
+    associated_token_program: Program<'info, AssociatedToken>,
     token_program: Program<'info, Token>,
     system_program: Program<'info, System>,
 }
 
 impl<'info> Cancel<'info> {
     pub fn refund_and_close_vault(&mut self) -> Result<()> {
-        let signer_seeds: [&[&[u8]]; 1] = [&[  //pda signer seeds
+        let signer_seeds: [&[&[u8]]; 1] = [&[
             b"state",
             &self.escrow.seed.to_le_bytes()[..],
             &[self.escrow.bump],
         ]];
- 
+
         transfer_checked(
             self.into_refund_context().with_signer(&signer_seeds),
-            self.escrow.initalizer_amount,
+            self.escrow.initializer_amount,
             self.mint_a.decimals,
         )?;
 
@@ -56,7 +59,7 @@ impl<'info> Cancel<'info> {
     }
 
     fn into_refund_context(&self) -> CpiContext<'_, '_, '_, 'info, TransferChecked<'info>> {
-        let cpi_accounts = TransferChecked {  //
+        let cpi_accounts = TransferChecked {
             from: self.vault.to_account_info(),
             mint: self.mint_a.to_account_info(),
             to: self.initializer_ata_a.to_account_info(),

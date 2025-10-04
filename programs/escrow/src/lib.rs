@@ -11,22 +11,23 @@ pub mod escrow {
     pub fn initialize(
         ctx: Context<Initialize>,
         seed:u64,
-        initalizar_amount:u64,
+        initalizer_amount:u64,
         taker_amount:u64
     ) -> Result<()>{
-        ctx.accounts.initalize_escrow(
-            seed,
-            &ctx.bumps,
-            initalizar_amount,
-            taker_amount
-        )?;
-        ctx.accounts.deposit(initalizar_amount)
+      ctx.accounts.initialize_escrow(
+        seed,
+        &ctx.bumps,
+        initalizer_amount,
+        taker_amount
+      )?;
+      ctx.accounts.deposit( initalizer_amount)
     }
     pub fn cancel(ctx:Context<Cancel>)->Result<()>{
-      ctx.accounts.refund_and_close_vault()
+        ctx.accounts.refund_and_close_vault()
     }
-
     pub fn exchange(ctx:Context<Exchange>)->Result<()>{
-      Ok(())
+        ctx.accounts.deposit()?;
+        ctx.accounts.withdraw_and_close_vault()
     }
+ 
 }

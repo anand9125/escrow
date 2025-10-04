@@ -6,7 +6,8 @@ use anchor_spl::{
     },
 };
 
-use crate::states::Escrow;
+use crate::states::EscrowState;
+
 
 #[derive(Accounts)]
 pub struct Exchange<'info> {
@@ -44,7 +45,7 @@ pub struct Exchange<'info> {
         seeds=[b"state", escrow.seed.to_le_bytes().as_ref()],
         bump = escrow.bump,
     )]
-    pub escrow: Box<Account<'info, Escrow>>,
+    pub escrow: Box<Account<'info, EscrowState>>,
     #[account(
         mut,
         associated_token::mint = mint_a,
@@ -74,7 +75,7 @@ impl<'info> Exchange<'info> {
 
         transfer_checked(
             self.into_withdraw_context().with_signer(&signer_seeds),
-            self.escrow.initalizer_amount,
+            self.escrow.initializer_amount,
             self.mint_a.decimals,
         )?;
 
